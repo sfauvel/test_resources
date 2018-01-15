@@ -1,5 +1,5 @@
 
-= Handle manuel test with Cucumber
+# Handle manuel test with Cucumber
 
 This project show a way to have all of our tests, manual or automated, write together with the same format.
 
@@ -15,15 +15,15 @@ Manuel tests without @ok or @ko return a pending result.
 
 When we start a test campaign, we can create a specific branch and set the test result into it.
 
-= Usage
+# Usage
 
-To build project, run build.sh
+To build project, run `build.sh`
 
 It create project and copy jar to scripts folder.
-It run : _mvn clean install assembly:single_
+It run : `mvn clean install assembly:single`
 
-Put features into the _features_ folder.
+Put features into the `features` folder.
 
-To generate a report, run _generate_report.sh_
+To generate a report, run `generate_report.sh`
 
-You will find report into _reports_ folder.
+You will find report into `reports` folder.
