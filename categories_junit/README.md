@@ -1,11 +1,11 @@
 
-Junit categories usage
+# JUnit 4 categories usage
 
 http://junit.org/junit4/javadoc/4.12/org/junit/experimental/categories/Categories.html
 
 With Maven test, we can launch category we want.
 
-mvn test -Dtest-category=SlowTests
+`mvn test -Dtest-category=SlowTests` 
 
 The class name is concat with the package where category are defined.
 If no option  was given, there is one by default
