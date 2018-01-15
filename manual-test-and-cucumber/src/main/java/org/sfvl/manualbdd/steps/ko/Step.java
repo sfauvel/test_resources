@@ -1,4 +1,4 @@
-package glue.glueManuelKo;
+package org.sfvl.manualbdd.steps.ko;
 
 import cucumber.api.java.After;
 import cucumber.api.java.fr.Etantdonné;

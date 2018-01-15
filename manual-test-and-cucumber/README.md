@@ -14,3 +14,16 @@ When we execute all tests, a specific glue make tests with @ok pass, and make fa
 Manuel tests without @ok or @ko return a pending result.
 
 When we start a test campaign, we can create a specific branch and set the test result into it.
+
+= Usage
+
+To build project, run build.sh
+
+It create project and copy jar to scripts folder.
+It run : _mvn clean install assembly:single_
+
+Put features into the _features_ folder.
+
+To generate a report, run _generate_report.sh_
+
+You will find report into _reports_ folder.

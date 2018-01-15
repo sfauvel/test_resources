@@ -1,4 +1,4 @@
-package glue.glueManuelPending;
+package org.sfvl.manualbdd.steps.pending;
 
 import cucumber.api.PendingException;
 import cucumber.api.java.Before;

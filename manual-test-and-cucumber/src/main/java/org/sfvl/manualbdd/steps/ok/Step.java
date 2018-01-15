@@ -1,4 +1,4 @@
-package glue.glueManuelOk;
+package org.sfvl.manualbdd.steps.ok;
 
 import cucumber.api.java.fr.Etantdonné;
 
