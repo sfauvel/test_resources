@@ -131,7 +131,10 @@ public class TzatzikiReportMerge {
 		
 		try {
 			mergeReports();
-		} catch (IOException | DocumentException e) {
+		} catch (IOException e ) {
+			System.err.println("Error while generating Tzatziki report");
+			System.err.println(e.getMessage());
+		} catch (DocumentException e) {
 			System.err.println("Error while generating Tzatziki report");
 			System.err.println(e.getMessage());
 		}
