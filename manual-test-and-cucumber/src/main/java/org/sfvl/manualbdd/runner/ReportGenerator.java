@@ -7,16 +7,6 @@ import java.util.List;
 
 public class ReportGenerator {
 
-	public static enum Type {
-		Ok("@ok"), Ko("@ko"), Pending("~@ok", "~@ko");
-
-		private String[] tags;
-
-		Type(String... tags) {
-			this.tags = tags;
-		}
-	}
-
 	private static final String BUILD_DIR = ".";
 	private final String featurePath;
 
@@ -32,7 +22,7 @@ public class ReportGenerator {
 
 	private void runTest(Type type, String features) {
 		List<String> arguments = new ArrayList<String>();
-		arguments.addAll(Arrays.asList("--glue", "fr.sfvl.manual_cucumber.steps." + type.name().toLowerCase()));
+		arguments.addAll(Arrays.asList("--glue", "org.sfvl.manualbdd.steps." + type.name().toLowerCase()));
 		for (String pluginOption : pluginOptions(type)) {
 			arguments.addAll(Arrays.asList("--plugin", pluginOption));
 		}
