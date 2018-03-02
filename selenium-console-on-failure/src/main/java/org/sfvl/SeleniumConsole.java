@@ -3,6 +3,7 @@ package org.sfvl;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
@@ -23,8 +24,22 @@ import groovy.lang.GroovyShell;
  */
 public class SeleniumConsole {
     
-    public static void run(WebDriver driver) {
-        new SeleniumConsole().giveControleToTheConsole(driver);
+	private final PrintStream out;
+
+	public SeleniumConsole() {
+		this(System.out);
+	}
+	
+	public SeleniumConsole(PrintStream out) {
+		this.out = out;
+	}
+
+	public static void run(WebDriver driver) {
+        run(driver, System.out);
+    }
+    
+    public static void run(WebDriver driver, PrintStream out) {
+        new SeleniumConsole(out).giveControleToTheConsole(driver);
     }
     
     void giveControleToTheConsole(WebDriver driver) {
@@ -35,7 +50,7 @@ public class SeleniumConsole {
         while (readCmdLine) {
             try {
                 String line = in.readLine();
-                readCmdLine = !line.equals("!");
+                readCmdLine = !"!".equals(line);
                 if (readCmdLine) {
                     execute(shell, line);
                 }
@@ -49,8 +64,8 @@ public class SeleniumConsole {
      */        
     private void execute(GroovyShell shell, String line) {
         try {             
-            Object value = shell.evaluate(line);
-            System.out.println(value);
+           Object value = shell.evaluate(line);
+           out.println(value);
         } catch (Exception e) {
             System.err.println("Line could not be executed:" + line);
             System.err.println(e.getMessage());
