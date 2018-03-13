@@ -11,6 +11,7 @@ abstract class TakeHandOnError extends TestWatcher {
 
     private WebDriver driver;
 	private PrintStream outputStream;
+	private Object baseClassSelenium;
 
     public TakeHandOnError(PrintStream outputStream) {
     	System.out.println("TakeHandOnError.TakeHandOnError()");
@@ -25,6 +26,11 @@ abstract class TakeHandOnError extends TestWatcher {
 	public TakeHandOnError(PrintStream printStream, ByteArrayOutputStream outStream) {
 		this(printStream);
 		System.out.println("TakeHandOnError.TakeHandOnError() " + System.identityHashCode(outStream));
+	}
+
+	public TakeHandOnError(PrintStream printStream, Object baseClassSelenium) {
+		this(printStream);
+		this.baseClassSelenium = baseClassSelenium;
 	}
 
 	/**
@@ -46,7 +52,7 @@ abstract class TakeHandOnError extends TestWatcher {
         super.failed(e, description);
         System.err.println(e.getMessage());
         System.out.println("\nTest is over. You can continue by yourself. Tape ! to exit");
-        SeleniumConsole.run(driver, outputStream);
+        SeleniumConsole.run(driver, outputStream, baseClassSelenium);
     }
 
     @Override

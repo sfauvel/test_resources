@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.lang.reflect.Field;
 
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
@@ -35,15 +36,15 @@ public class SeleniumConsole {
 	}
 
 	public static void run(WebDriver driver) {
-        run(driver, System.out);
+        run(driver, System.out, null);
     }
     
-    public static void run(WebDriver driver, PrintStream out) {
-        new SeleniumConsole(out).giveControleToTheConsole(driver);
+    public static void run(WebDriver driver, PrintStream out, Object baseClassSelenium) {
+        new SeleniumConsole(out).giveControleToTheConsole(driver, baseClassSelenium);
     }
     
-    void giveControleToTheConsole(WebDriver driver) {
-        GroovyShell shell = initGroovyShell(driver);
+    void giveControleToTheConsole(WebDriver driver, Object baseClassSelenium) {
+        GroovyShell shell = initGroovyShell(driver, baseClassSelenium);
         
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         boolean readCmdLine = true;
@@ -72,12 +73,22 @@ public class SeleniumConsole {
         }
     }
 
-    private GroovyShell initGroovyShell(WebDriver driver) {
+    private GroovyShell initGroovyShell(WebDriver driver, Object baseClassSelenium) {
         CompilerConfiguration config = new CompilerConfiguration();
         addImports(config, By.class);
-        
+       
         Binding binding = new Binding();
         binding.setVariable("driver", driver);
+        binding.setVariable("this", baseClassSelenium);
+        
+        for (Field field : baseClassSelenium.getClass().getDeclaredFields()) {
+        	System.out.println(field.getName());
+        	try {
+				binding.setVariable(field.getName(), field.get(baseClassSelenium));
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+        }
         
         return new GroovyShell(this.getClass().getClassLoader(), binding, config);
     }
