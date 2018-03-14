@@ -51,7 +51,8 @@ abstract class TakeHandOnError extends TestWatcher {
     protected void failed(Throwable e, Description description) {
         super.failed(e, description);
         System.err.println(e.getMessage());
-        System.out.println("\nTest is over. You can continue by yourself. Tape ! to exit");
+        e.printStackTrace(System.err);
+        System.err.println("\nTest is over. You can continue by yourself. Tape ! to exit");
         SeleniumConsole.run(driver, outputStream, baseClassSelenium);
     }
 

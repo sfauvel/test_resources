@@ -81,17 +81,21 @@ public class SeleniumConsole {
         binding.setVariable("driver", driver);
         binding.setVariable("this", baseClassSelenium);
         
-        for (Field field : baseClassSelenium.getClass().getDeclaredFields()) {
-        	System.out.println(field.getName());
+        bindFields(baseClassSelenium, binding);
+        
+        return new GroovyShell(this.getClass().getClassLoader(), binding, config);
+    }
+
+	private void bindFields(Object baseClassSelenium, Binding binding) {
+		for (Field field : baseClassSelenium.getClass().getDeclaredFields()) {
+        	// System.out.println(field.getName());
         	try {
 				binding.setVariable(field.getName(), field.get(baseClassSelenium));
 			} catch (IllegalArgumentException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
         }
-        
-        return new GroovyShell(this.getClass().getClassLoader(), binding, config);
-    }
+	}
 
     private void addImports(CompilerConfiguration config, Class<? extends Object>... classes) {
         ImportCustomizer importCustomizer = new ImportCustomizer();
