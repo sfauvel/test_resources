@@ -1,9 +1,9 @@
 package org.sfvl.manualbdd.steps.ok;
 
-import cucumber.api.java.fr.Etantdonné;
+import cucumber.api.java.en.Given;
 
 public class Step {
-	@Etantdonné(".*")
+	@Given(".*")
 	public void ok() throws Throwable {
 	   
 	}

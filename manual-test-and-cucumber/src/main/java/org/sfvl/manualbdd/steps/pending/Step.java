@@ -2,7 +2,7 @@ package org.sfvl.manualbdd.steps.pending;
 
 import cucumber.api.PendingException;
 import cucumber.api.java.Before;
-import cucumber.api.java.fr.Etantdonné;
+import cucumber.api.java.en.Given;
 
 public class Step {
 	
@@ -11,7 +11,7 @@ public class Step {
 		throw new PendingException("Not executed");
 	}
 	
-	@Etantdonné(".*")
+	@Given(".*")
 	public void pending() throws Throwable {
 	}
 

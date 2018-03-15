@@ -1,10 +1,10 @@
 package org.sfvl.manualbdd.steps.ko;
 
 import cucumber.api.java.After;
-import cucumber.api.java.fr.Etantdonné;
+import cucumber.api.java.en.Given;
 
 public class Step {
-	@Etantdonné("(.*)")
+	@Given("(.*)")
 	public void ko(String message) throws Throwable {
 		System.out.println(message);
 		if (message.startsWith("ERREUR")) {		

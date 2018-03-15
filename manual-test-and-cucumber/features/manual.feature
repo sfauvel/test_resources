@@ -1,31 +1,10 @@
-#language: fr
-
 @manuel
-Fonctionnalité: Test manuel à faire
-
-@ko
-Scénario: Test ko
-	Etant donné un test manuel
-	Quand il y a un problème
-	Alors le test est ko
-	
-@ko
-Scénario: Test ko avec indication de l'étape en échec
-	Etant donné un test manuel
-	Quand si on veut spécifier l'endroit de l'échec
-	Alors ERREUR l’écran ne s’ouvre pas
-	Alors le test échoue sur le message avec ERREUR
+Feature: Manual test to do
 
 @ok
-Scénario: Test Ok
-	Etant donné un test manuel
-	Quand il tout va bien
-	Alors le test est ok
-	
-
-Scénario: Test sans état pour le moment
-	Etant donné un test manuel
-	Quand il n'a pas été joué
-	Alors le test est en attente
-	
+Scenario: Test Ok
+	Given a manual test
+	When everything is ok
+	Then test is ok
+		
 	
