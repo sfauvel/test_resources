@@ -26,8 +26,7 @@ public class SeleniumLiveOnErrorTest {
     public void init() throws IOException {
     	webapp.start();
     	
-        DriverFactory factory = DriverFactory.getInstance();
-        driver = factory.getChromeDriver("../driver/chrome-2.35");
+        driver = DriverFactory.getInstance().getDriver();
         driver.get("http://localhost:8080/welcome");
     }
     

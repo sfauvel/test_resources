@@ -1,88 +1,139 @@
 package org.sfvl;
 
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class DriverFactory {
-    private static final String CHROME_DRIVER_PATH = "SELENIUM_CHROME_DRIVER";
-    private static final String PHANTOMJS_DRIVER_PATH = "SELENIUM_PHANTOMJS_DRIVER";
-    private static final String FIREFOX_DRIVER_PATH = "SELENIUM_FIREFOX_DRIVER";
-    private static DriverFactory instance = new DriverFactory();
+	private static DriverFactory instance = new DriverFactory();
 
-    public static DriverFactory getInstance() {
-        return instance;
-    }
-    
-    public WebDriver getDefaultDriver() {
-        String browser = System.getenv("BROWSER");
-        if ("chrome".equalsIgnoreCase(browser)) {
-            return getChromeDriver();
-        } else if ("firefox".equalsIgnoreCase(browser)) {
-            return getFirefoxDriver();
-        } else if ("internetexplorer".equalsIgnoreCase(browser)) {
-            return getInternetExplorerDriver();
-        } else if ("phantomjs".equalsIgnoreCase(browser)) {
-            return getPhantomJsDriver();
-        }
-        return getPhantomJsDriver();
-    }
-    
-    private WebDriver getInternetExplorerDriver() {
-        // FIXME
-        throw new RuntimeException("Not yet implemented");
-    }
+	public static DriverFactory getInstance() {
+		return instance;
+	}
 
-    public WebDriver getPhantomJsDriver() {  
-        String driverPath = System.getenv(PHANTOMJS_DRIVER_PATH);
-        if (driverPath.isEmpty()) {
-            throw new RuntimeException("La variable " + PHANTOMJS_DRIVER_PATH + " n'est pas définie");
-        }
-        
-        return getPhantomJsDriver(driverPath);
-    }
+	public WebDriver getDriver() {
+		String browser = Optional.ofNullable(System.getenv("BROWSER")).orElse("").toUpperCase();
+		System.out.println("BROWSER:" + browser);
 
-	public WebDriver getPhantomJsDriver(String driverPath) {
-		if (driverPath != null && !driverPath.isEmpty()) {
-            System.setProperty("phantomjs.binary.path", Paths.get(driverPath, "phantomjs").toString());
-        }
-        
-        return new PhantomJSDriver();
+		DriverType driverType;
+		try {
+			driverType = DriverType.valueOf(browser);
+		} catch (IllegalArgumentException e) {
+			driverType = getDefaultDriverType();
+		}
+
+		return driverType.driverDefinition.getDriver();
+	}
+
+
+	public DriverType getDefaultDriverType() {
+		return DriverType.CHROMEHEADLESS;
 	}
 	
-    public WebDriver getChromeDriver() {       
-        String driverPath = System.getenv(CHROME_DRIVER_PATH);
-        if (driverPath.isEmpty()) {
-            throw new RuntimeException("La variable " + CHROME_DRIVER_PATH + " n'est pas définie");
-        }
-        return getChromeDriver(driverPath);
-    }
+	enum DriverType {
+		CHROME(new ChromeDriverDefinition()),
+		CHROMEHEADLESS(new ChromeHeadlessDriverDefinition()),
+		PHANTOMJS(new PhantomJSDriverDefinition()),
+		FIREFOX(new FirefoxDriverDefinition()),
+		FIREFOXHEADLESS(new FirefoxHeadlessDriverDefinition()),
+		IE(null);
 
-	public WebDriver getChromeDriver(String driverPath) {
-		System.setProperty("webdriver.chrome.driver", Paths.get(driverPath, "chromedriver").toString());
-        ChromeDriver driver = new ChromeDriver();
-        return driver;
+		private DriverDefinition driverDefinition;
+
+		DriverType(DriverDefinition driverDefinition) {
+			this.driverDefinition = driverDefinition;
+		}
 	}
 
-    public WebDriver getFirefoxDriver() {
-        String driverPath = System.getenv(FIREFOX_DRIVER_PATH);
-        if (driverPath.isEmpty()) {
-            throw new RuntimeException("La variable " + FIREFOX_DRIVER_PATH + " n'est pas définie");
-        }
-        return getFirefoxDriver(driverPath);
-    }
+	public static abstract class DriverDefinition {
+		abstract WebDriver getDriver();
 
-	WebDriver getFirefoxDriver(String driverPath) {
-		System.setProperty("webdriver.gecko.driver", Paths.get(driverPath, "geckodriver").toString());
-
-        RemoteWebDriver driver = new FirefoxDriver();
-        driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-        return driver;
+		protected Optional<String> getDriverPathFromEnv(String envVariable) {
+			Optional<String> driverPath = Optional.ofNullable(System.getenv(envVariable));
+			if (!driverPath.isPresent()) {
+				// throw new RuntimeException("La variable " + envVariable + " n'est pas
+				// définie");
+				System.err.println("La variable " + envVariable + " n'est pas définie");
+			}
+			return driverPath;
+		}
 	}
 
+	public static class ChromeDriverDefinition extends DriverDefinition {
+		WebDriver getDriver() {
+			System.setProperty("webdriver.chrome.driver", Paths.get(getDriverPath(), "chromedriver").toString());
+			return new ChromeDriver(getOptions());
+		}
+
+		protected ChromeOptions getOptions() {
+			return new ChromeOptions();
+		}
+
+		private String getDriverPath() {
+			return getDriverPathFromEnv("SELENIUM_CHROME_DRIVER").orElse("../driver/chrome-2.35");
+		}
+	}
+
+	public static class ChromeHeadlessDriverDefinition extends ChromeDriverDefinition {
+		@Override
+		protected ChromeOptions getOptions() {
+			ChromeOptions options = new ChromeOptions();
+			options.addArguments("headless");
+			options.addArguments("window-size=1200x600");
+			return options;
+		}
+	}
+
+	public static class PhantomJSDriverDefinition extends DriverDefinition {
+		WebDriver getDriver() {
+			System.setProperty("phantomjs.binary.path", Paths.get(getDriverPath(), "phantomjs").toString());
+			return new PhantomJSDriver();
+		}
+
+		private String getDriverPath() {
+			return getDriverPathFromEnv("SELENIUM_PHANTOMJS_DRIVER").orElse("../driver/phantomjs-2.1.1");
+		}
+	}
+
+	public static class FirefoxDriverDefinition extends DriverDefinition {
+		WebDriver getDriver() {
+			System.setProperty("webdriver.gecko.driver", Paths.get(getDriverPath(), "geckodriver").toString());
+
+			RemoteWebDriver driver = new FirefoxDriver();
+		//	driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+			return driver;
+		}
+
+		private String getDriverPath() {
+			return getDriverPathFromEnv("SELENIUM_FIREFOX_DRIVER").orElse("../driver/geckodriver-v0.20.0-linux64");
+		}
+	}
+
+
+	public static class FirefoxHeadlessDriverDefinition extends DriverDefinition {
+		WebDriver getDriver() {
+			System.setProperty("webdriver.gecko.driver", Paths.get(getDriverPath(), "geckodriver").toString());
+
+			FirefoxOptions options = new FirefoxOptions();
+			options.addArguments("-headless");
+			options.addArguments("window-size=1200x600");
+			RemoteWebDriver driver = new FirefoxDriver(options);
+		//	driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+			return driver;
+		}
+
+		private String getDriverPath() {
+			return getDriverPathFromEnv("SELENIUM_FIREFOX_DRIVER").orElse("../driver/geckodriver-v0.20.0-linux64");
+		}
+	}
 }

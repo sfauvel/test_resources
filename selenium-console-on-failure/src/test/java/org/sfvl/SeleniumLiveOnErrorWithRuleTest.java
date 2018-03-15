@@ -42,12 +42,13 @@ public class SeleniumLiveOnErrorWithRuleTest {
 		@Rule
 		public TakeHandOnError console = new TakeHandOnError(new PrintStream(innerOutStream), this) {
 			public WebDriver initDriver() {
-				return DriverFactory.getInstance().getChromeDriver("../driver/chrome-2.35");
+				return DriverFactory.getInstance().getDriver();
 			};
 		};
 
 		@Before 
 		public void initDriver() {
+			if (!activateTest) return;
 			driver = console.getDriver();
 			driver.get("http://localhost:8080/welcome");
 		}
