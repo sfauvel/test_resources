@@ -1,0 +1,4 @@
+
+= combinatorial-testing
+
+Example to test generating combinatorial test case.
