@@ -1,0 +1,268 @@
+:sourcedir: .
+:source-highlighter: pygments
+
+= JUnit 4 categories usage
+
+This project show how we can select which tests to run.
+
+It shows how to define integration tests and how to select tests by categories.
+
+== Category
+
+A _category_ is an interface.mvn
+
+_Categories_ could be put on classes or methods.
+A class could be have several categories.
+
+.Category on class
+[source,java,indent=0]
+----
+include::{sourcedir}/src/test/java/org/test/SlowUnitTest.java[]
+----
+
+.Category on method
+[source,java,indent=0]
+----
+include::{sourcedir}/src/test/java/org/test/UnitTest.java[]
+----
+
+
+== Select tests to run
+
+Categories to run could be specified in _maven-surefire-plugin_ configuration in pom.xml.
+By default, all tests are run.
+
+Using properties allow to configure categories with command line parameters.
+
+[source,xml]
+----
+<properties>
+    <excludeTests></excludeTests>
+    <includeTests></includeTests>
+</properties>
+
+<build>
+
+    <plugins>
+       <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+                <groups>${includeTests}</groups>
+                <excludedGroups>${excludeTests}</excludedGroups>
+            </configuration>
+        </plugin>
+    </plugins>
+ </build>
+----
+
+=== With Maven
+
+Tu run all unit tests:
+
+----
+mvn test
+----
+
+Example to run all _'Special'_ and _'Critical'_ excepts _'Slow'_ using command line:
+----
+mvn test -DexcludeTests=dojo.Slow -DincludeTests=dojo.Special,dojo.Critical
+----
+
+
+=== With Intellij
+
+To run all tests:
+
+* Right click on src/test/java
+* Run 'All Tests'
+
+
+To select category to run, edit or add a test configuration:
+
+* In *'Test Kind'*, select Category
+* In Category field select Category class to use
+
+It's not possible to exclude Category or to run more than one category.
+Instead, you could create a Maven configuration with include and exclude parameters.
+
+
+=== Programmatically
+
+It's possible to create classes to define test suite.
+
+.Runner launch all tests except Slow category.
+[source,java,indent=0]
+----
+include::{sourcedir}/src/test/java/org/test/runner/MyFastTestSuite.java[]
+----
+
+Normally, it's necessary to define all test classes to uses.
+To avoid that, it's possible to use _org.junit.extensions.cpsuite.ClasspathSuite_ from _io.takari.junit:takari-cpsuite_.
+It automatically add all tests in classpath to the test suite.
+
+[source,java,indent=0]
+----
+include::{sourcedir}/src/test/java/org/test/runner/AllTests.java[]
+----
+
+== Integration tests
+
+==== Add integration test directory
+
+To use a specific directory for integration tests, it's necessary to add it in pom.xml.
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.codehaus.mojo</groupId>
+    <artifactId>build-helper-maven-plugin</artifactId>
+    <version>3.0.0</version>
+    <executions>
+        <execution>
+            <phase>generate-test-sources</phase>
+            <goals>
+                <goal>add-test-source</goal>
+            </goals>
+            <configuration>
+                <sources>
+                    <source>src/int/java</source>
+                </sources>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+----
+
+==== Using failsafe on integration test
+
+For integration tests, we used _maven-failsafe-plugin_.
+
+With goal _integration-test_, build is Succes even some tests failed.
+
+With goal _verify_, build is Ko when ont test failed.
+
+
+To identify what is an integration test we can:
+
+- Define a specific name for test class
+- Put integration tests into a specific package
+- Add a category to that tests
+
+===== Integration test finish with **IT*.
+
+[source,xml]
+----
+<plugin>
+    <artifactId>maven-failsafe-plugin</artifactId>
+    <version>2.22.0</version>
+    <executions>
+        <execution>
+            <goals>
+                <goal>integration-test</goal>
+                <goal>verify</goal>
+            </goals>
+        </execution>
+    </executions>
+    <configuration>
+        <includes>
+            <include>**/*IT</include>
+        </includes>
+    </configuration>
+
+</plugin>
+----
+
+===== Integration test in a 'integ' package and finishing by 'Test':
+
+[source,xml]
+----
+<plugin>
+    <artifactId>maven-failsafe-plugin</artifactId>
+    <version>2.22.0</version>
+    <executions>
+        <execution>
+            <goals>
+                <goal>integration-test</goal>
+                <goal>verify</goal>
+            </goals>
+        </execution>
+    </executions>
+    <configuration>
+        <includes>
+            <include>**/integ/*Test</include>
+        </includes>
+    </configuration>
+</plugin>
+----
+
+It's necessary to exclude '**/integ/**' from surefire plugin to not run that test with unit tests:
+
+[source,xml]
+----
+<plugin>
+    <artifactId>maven-surefire-plugin</artifactId>
+    <configuration>
+        <excludes>**/integ/**</excludes>
+    </configuration>
+</plugin>
+----
+
+Using a specif package for integration has drawbacks:
+
+* It's not easy to launch unit test without integration tests in IDE.
+* Test and Code are not in the same package
+
+=== To run all tests (T.U. and T.I.):
+
+With Maven:
+
+----
+mvn integration-test
+----
+
+Run failsafe plugin and not break the build even tests failed.
+
+or
+
+----
+mvn verify
+----
+
+Run failsafe plugin and break the build when tests failed.
+
+With Intellij:
+
+* Right click on src/int/java
+* Run 'All Tests'
+
+
+=== To run all integration tests in src/int/java (but not T.U.):
+
+With Maven:
+
+----
+???
+----
+
+With Intellij:
+
+* Right click on src/int/java
+* Run 'All Tests'
+
+
+
+
+== Resources
+
+JUnit4:
+link:https://github.com/junit-team/junit4/wiki/Categories[]
+
+link:http://junit.org/junit4/javadoc/4.12/org/junit/experimental/categories/Categories.html[]
+
+
+JUnit 5:
+link:https://www.baeldung.com/junit-filtering-tests[]
+
+Maven test directories:
+https://www.baeldung.com/maven-integration-test
+
