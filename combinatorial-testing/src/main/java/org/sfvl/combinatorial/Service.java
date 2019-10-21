@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 public class Service {
 
-    List<Person> people = new ArrayList<Person>();
+    List<Person> people = new ArrayList<>();
 
     public List<Person> find(Person filter) {
 

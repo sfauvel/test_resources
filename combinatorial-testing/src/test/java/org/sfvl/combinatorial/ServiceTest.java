@@ -6,7 +6,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ServiceTest {
+/**
+ * Standard test to check filters not returning values when one attribute doesn"t match.
+ */
+public class ServiceTest {
 
     Service service = new Service();
 

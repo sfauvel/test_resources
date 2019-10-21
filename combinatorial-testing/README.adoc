@@ -1,4 +1,7 @@
 
 = combinatorial-testing
 
-Example to test generating combinatorial test case.
+Example to test combinatorial test case.
+
+The use case is a test using several values and have to check that the result is different if only one value is different.
+
