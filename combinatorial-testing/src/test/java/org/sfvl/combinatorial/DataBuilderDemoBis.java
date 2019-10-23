@@ -1,6 +1,5 @@
 package org.sfvl.combinatorial;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -29,42 +28,27 @@ public class DataBuilderDemoBis {
         }
     }
 
-    static Person person;
-    Service service;
-
-    @BeforeAll
-    public static void init() {
-        person = new Person();
-        person.setFirstName("John");
-        person.setLastName("Doe");
-        person.setActive(true);
-    }
-
-    @BeforeEach
-    public void setup() throws IllegalAccessException, InstantiationException {
-        service = new Service();
-        service.add(person);
-    }
-
     private static Stream<Arguments> generateWrongFilter() throws InstantiationException, IllegalAccessException {
 
         Data data = new Data() {
             @Override
             public List<MapSetterList> values() {
                 return Arrays.asList(
-                        mapValues(__ -> person.setFirstName(__), Arrays.asList(person.getFirstName(), "Bob")),
-                        mapValues(__ -> person.setLastName(__), Arrays.asList(person.getLastName(), "Morane")),
-                        mapValues(__ -> person.setActive(__), Arrays.asList(person.isActive(), false))
+                        mapValues(__ -> person.setFirstName(__), Arrays.asList("John", "Bob")),
+                        mapValues(__ -> person.setLastName(__), Arrays.asList("Doe", "Morane")),
+                        mapValues(__ -> person.setActive(__), Arrays.asList(true, false))
                 );
             }
         };
 
-        Predicate<Data> notPersonReference = d -> !(d.person.getFirstName().equals(person.getFirstName())
-                && d.person.getLastName().equals(person.getLastName())
-                && d.person.isActive() == person.isActive());
+
+        Predicate<Data> personReference = d ->
+                d.person.getFirstName().equals("John")
+                && d.person.getLastName().equals("Doe")
+                && d.person.isActive() == true;
 
         return data.buildValues().stream()
-                .filter(notPersonReference)
+                .filter(personReference.negate())
                 .map(d -> d.person)
                 .map(Arguments::of);
 
@@ -73,8 +57,18 @@ public class DataBuilderDemoBis {
     @ParameterizedTest
     @MethodSource("generateWrongFilter")
     public void should_find_nothing_when_filter_not_match(Person wrongFilter) throws InstantiationException, IllegalAccessException {
+
+        Service service = new Service();
+        service.add(createPerson("John", "Doe", true));
+
         assertEquals(0, service.find(wrongFilter).size());
     }
 
-
+    private Person createPerson(String firstName, String lastName, boolean active) {
+        Person person = new Person();
+        person.setFirstName(firstName);
+        person.setLastName(lastName);
+        person.setActive(active);
+        return person;
+    }
 }

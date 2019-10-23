@@ -55,7 +55,7 @@ public class ServiceTest {
         Person personFilter = new Person();
         personFilter.setActive(true);
 
-        List<Person> people = service.find(person);
+        List<Person> people = service.find(personFilter);
         assertEquals("John", people.get(0).getFirstName());
         assertEquals(1, people.size());
     }
@@ -71,7 +71,7 @@ public class ServiceTest {
         Person personFilter = new Person();
         personFilter.setActive(false);
 
-        List<Person> people = service.find(person);
+        List<Person> people = service.find(personFilter);
         assertEquals(0, people.size());
     }
 }
