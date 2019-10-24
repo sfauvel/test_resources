@@ -27,10 +27,10 @@ class DataGeneratorObjectDemo {
 
     private static Stream<Arguments> generateValues() throws InstantiationException, IllegalAccessException {
 
-        return new DataGeneratorObject<Person>(PersonWithName::new) {{
-            withValues(Person::setFirstName, asList("John", "Jack"));
-            withValues(Person::setLastName, asList("Doe", "Morane"));
-            withValues(Person::setActive, BOOLEANS);
+        return new DataGenerator<Person>(PersonWithName::new) {{
+            with(Person::setFirstName, asList("John", "Jack"));
+            with(Person::setLastName, asList("Doe", "Morane"));
+            with(Person::setActive, BOOLEANS);
         }}.build().stream()
                 .filter(person -> true) // Filter some not wanted combinations.
                 .map(Arguments::of);

@@ -1,7 +1,6 @@
 package org.sfvl.combinatorial;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
@@ -11,9 +10,29 @@ import java.util.stream.IntStream;
 /**
  * An object that can generate a combination of values.
  *
+ * To generate a list of object, create a anonymous class of DataGenerator.
+ * The generic type is the one of object generated.
+ * Constructor of generator take a supplier that create the object to return.
+ * With an anonymous class, we can configure the class using with into a static constructor
+ * (between {{ }}).
+ *
+ * <code>
+ *   List<Person> people = new DataGenerator<Person>(Person::new) {{
+ *             with((o, __) -> o.setFirstName(__), asList("John", "Bob"));
+ *             with((o, __) -> o.setLastName(__), asList("Doe", "Morane"));
+ *             with((o, __) -> o.setActive(__), asList(true, false));
+ *         }}.build();
+ * </code>
+ * <code>
+ *        List<Person> people = new DataGenerator<Person>(Person::new) {{
+ *             with(Person::setFirstName, asList("John", "Bob"));
+ *             with(Person::setLastName, asList("Doe", "Morane"));
+ *             with(Person::setActive, asList(true, false));
+ *         }}.build();
+ * </code>
  * @param <D>
  */
-public class DataGeneratorObject<D> {
+public class DataGenerator<D> {
     private final Supplier<D> factory;
     private List<SetterWithValues> setters = new ArrayList<>();
 
@@ -32,18 +51,17 @@ public class DataGeneratorObject<D> {
         }
     }
 
-    public DataGeneratorObject(Supplier<D> factory) {
+    public DataGenerator(Supplier<D> factory) {
         this.factory = factory;
     }
 
-    public <T> DataGeneratorObject<D> withValues(BiConsumer<D, T> setter, List<T> values) {
+    public <T> DataGenerator<D> with(BiConsumer<D, T> setter, List<T> values) {
         setters.add(new SetterWithValues(setter, values));
         return this;
     }
 
     public List<D> build() {
         return buildModuleOptim(factory, setters);
-//        return buildRecursive(factory, setters);
     }
 
     private List<D> buildModuleOptim(Supplier<D> factory, List<SetterWithValues> setters) {
@@ -51,11 +69,12 @@ public class DataGeneratorObject<D> {
         List<Integer> nbValuesPerField = nbValuesPerField(setters);
 
         int combinationSize = combinationSize(setters);
-        List<D> combinations = new ArrayList<>(combinationSize);
-        for (int index = 0; index < combinationSize; index++) {
-            int[] combinationForIndex = getCombinationForIndex(combinationNumber, nbValuesPerField, index);
-            combinations.add(buildObject(factory, setters, combinationForIndex));
-        }
+        List<D> combinations = IntStream.range(0, combinationSize).parallel()
+                .mapToObj(index -> {
+                    int[] combinationForIndex = getCombinationForIndex(combinationNumber, nbValuesPerField, index);
+                    return buildObject(factory, setters, combinationForIndex);
+                }).collect(Collectors.toList());
+
         return combinations;
     }
 
@@ -86,30 +105,12 @@ public class DataGeneratorObject<D> {
     }
 
     private int[] getCombinationForIndex(ArrayList<Integer> combinationNumber, List<Integer> nbPerField, int globalIndex) {
+
         int[] combination = new int[nbPerField.size()];
         for (int i = 0; i < combination.length; i++) {
             combination[i] = ((globalIndex / combinationNumber.get(i)) % nbPerField.get(i));
         }
         return combination;
-    }
-
-    /**
-     * A recursive combination build.
-     * It's not used but it could.
-     */
-    public List<D> buildRecursive(Supplier<D> factory, List<SetterWithValues> mappers) {
-
-        if (mappers.isEmpty()) {
-            return Arrays.asList(factory.get());
-        } else {
-            SetterWithValues<D, ?> mapper = mappers.get(0);
-            return mapper.values.stream()
-                    .flatMap(value -> buildRecursive(factory, mappers.subList(1, mappers.size()))
-                            .stream().peek(o -> mapper.accept(o, value))
-                    )
-                    .collect(Collectors.toList());
-
-        }
     }
 
 }
