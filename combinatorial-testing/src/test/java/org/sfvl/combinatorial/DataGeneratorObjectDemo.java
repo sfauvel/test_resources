@@ -16,7 +16,7 @@ class DataGeneratorObjectDemo {
     private static final List<Boolean> BOOLEANS = asList(true, false);
 
     /**
-     * We can redefine toString to be display on test.
+     * We redefine toString to be display on test.
      */
     public static class PersonWithName extends Person {
         @Override
@@ -28,11 +28,12 @@ class DataGeneratorObjectDemo {
     private static Stream<Arguments> generateValues() throws InstantiationException, IllegalAccessException {
 
         return new DataGenerator<Person>(PersonWithName::new) {{
-            with(Person::setFirstName, asList("John", "Jack"));
-            with(Person::setLastName, asList("Doe", "Morane"));
+            with(Person::setFirstName, "John", "Jack");
+            with(Person::setLastName, "Doe", "Morane");
             with(Person::setActive, BOOLEANS);
         }}.build().stream()
-                .filter(person -> true) // Filter some not wanted combinations.
+                // Filter some not wanted combinations.
+                .filter(person -> person.getLastName().equals(person.getFirstName()))
                 .map(Arguments::of);
 
 

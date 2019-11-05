@@ -1,6 +1,7 @@
 package org.sfvl.combinatorial;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
@@ -57,6 +58,11 @@ public class DataGenerator<D> {
 
     public <T> DataGenerator<D> with(BiConsumer<D, T> setter, List<T> values) {
         setters.add(new SetterWithValues(setter, values));
+        return this;
+    }
+
+    public <T> DataGenerator<D> with(BiConsumer<D, T> setter, T... values) {
+        setters.add(new SetterWithValues(setter, Arrays.asList(values)));
         return this;
     }
 
