@@ -1,0 +1,13 @@
+= Mockito usage
+
+* https://site.mockito.org/
+* link:https://github.com/mockito/mockito[Github]
+* link:https://static.javadoc.io/org.mockito/mockito-core/3.1.0/org/mockito/Mockito.html[Documentation]
+
+== Initialization
+
+MockitoAnnotationExtended.initMocks allow to create mocks and inject them
+when original method orverwrite all mocks.
+
+It's possible to create a mock with options and inject it.
+It's also possible to do the same with a real class.
