@@ -139,7 +139,7 @@ For integration tests, we used _maven-failsafe-plugin_.
 
 With goal _integration-test_, build is Succes even some tests failed.
 
-With goal _verify_, build is Ko when ont test failed.
+With goal _verify_, build is Ko when one test failed.
 
 
 To identify what is an integration test we can:
@@ -172,7 +172,7 @@ To identify what is an integration test we can:
 </plugin>
 ----
 
-===== Integration test in a 'integ' package and finishing by 'Test':
+===== Integration test in a 'integration' package and finishing by 'Test':
 
 [source,xml]
 ----
@@ -189,13 +189,13 @@ To identify what is an integration test we can:
     </executions>
     <configuration>
         <includes>
-            <include>**/integ/*Test</include>
+            <include>**/integration/**/*Test</include>
         </includes>
     </configuration>
 </plugin>
 ----
 
-It's necessary to exclude '**/integ/**' from surefire plugin to not run that test with unit tests:
+It's necessary to exclude '**/integration/**' from surefire plugin to not run that test with unit tests:
 
 [source,xml]
 ----
@@ -249,8 +249,18 @@ With Intellij:
 * Right click on src/int/java
 * Run 'All Tests'
 
+=== To run all unit tests (but not T.I.):
 
+With Maven:
+----
+mvn test
+----
 
+or
+
+----
+mvn install -DskipITs
+----
 
 == Resources
 

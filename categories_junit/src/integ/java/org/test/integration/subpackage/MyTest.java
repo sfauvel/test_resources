@@ -1,8 +1,6 @@
-package org.test.integ;
+package org.test.integration.subpackage;
 
 import org.junit.Test;
-
-import static org.junit.Assert.fail;
 
 /**
  * Test in a specific package with a standard test name.
@@ -10,7 +8,7 @@ import static org.junit.Assert.fail;
 public class MyTest {
     @Test
     public void should_do_something() {
-        System.out.println("integ.MyTest.should_do_something");
+        System.out.println("integration.supbpackage.MyTest.should_do_something");
     }
 
 }

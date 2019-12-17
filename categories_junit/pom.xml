@@ -82,7 +82,7 @@
 				<configuration>
 					<includes>
 						<include>**/*IT</include>
-						<include>**/integ/*Test</include>
+						<include>**/integration/**/*Test</include>
 					</includes>
 					<groups>${includeTests}</groups>
 					<excludedGroups>${excludeTests}</excludedGroups>
