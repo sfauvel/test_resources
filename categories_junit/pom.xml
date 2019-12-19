@@ -1,107 +1,64 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.spike</groupId>
-	<artifactId>categorie-test</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	
-	<properties>
-	    <test-category>FastTests</test-category>
-		<excludeTests></excludeTests>
-		<includeTests></includeTests>
-	</properties>
-	
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>3.0.0</version>
-				<executions>
-					<execution>
-						<phase>generate-test-sources</phase>
-						<goals>
-							<goal>add-test-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>src/int/java</source>
-								<source>src/integ/java</source>
-							</sources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.6.1</version>
-				<configuration>
-					<!-- http://maven.apache.org/plugins/maven-compiler-plugin/ -->
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
-			<!--<plugin>-->
-				<!--<groupId>org.apache.maven.plugins</groupId>-->
-				<!--<artifactId>maven-surefire-plugin</artifactId>-->
-				<!--<version>2.20.1</version>-->
-				<!--<dependencies>-->
-					<!--<dependency>-->
-						<!--<groupId>org.apache.maven.surefire</groupId>-->
-						<!--<artifactId>surefire-junit47</artifactId>-->
-						<!--<version>2.20.1</version>-->
-					<!--</dependency>-->
-				<!--</dependencies>-->
-				<!--<configuration>-->
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.spike</groupId>
+    <artifactId>categorie-test</artifactId>
+    <packaging>pom</packaging>
+    <version>0.0.1-SNAPSHOT</version>
+    <modules>
+        <module>integrationTest</module>
+        <module>application</module>
+    </modules>
 
-					<!--<groups>${includeTests}</groups>-->
-					<!--<excludedGroups>${excludeTests}</excludedGroups>-->
-				<!--</configuration>-->
-			<!--</plugin>-->
-			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<!--<groups>org.test.category.${test-category}</groups>-->
-					<excludes>**/integ/**</excludes>
-					<groups>${includeTests}</groups>
-					<excludedGroups>${excludeTests}</excludedGroups>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>2.22.0</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>integration-test</goal>
-							<goal>verify</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<includes>
-						<include>**/*IT</include>
-						<include>**/integration/**/*Test</include>
-					</includes>
-					<groups>${includeTests}</groups>
-					<excludedGroups>${excludeTests}</excludedGroups>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.takari.junit</groupId>
-			<artifactId>takari-cpsuite</artifactId>
-			<version>1.2.7</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+    <properties>
+        <test-category>FastTests</test-category>
+        <excludeTests></excludeTests>
+        <includeTests></includeTests>
+
+        <takari-cpsuite.version>1.2.7</takari-cpsuite.version>
+        <junit.version>4.12</junit.version>
+    </properties>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.1</version>
+                <configuration>
+                    <!-- http://maven.apache.org/plugins/maven-compiler-plugin/ -->
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.spike</groupId>
+                <artifactId>application</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Use to reference all tests in programatically test suite-->
+            <dependency>
+                <groupId>io.takari.junit</groupId>
+                <artifactId>takari-cpsuite</artifactId>
+                <version>${takari-cpsuite.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+
+    </dependencyManagement>
+
 </project>

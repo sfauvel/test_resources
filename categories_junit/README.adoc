@@ -262,6 +262,19 @@ or
 mvn install -DskipITs
 ----
 
+== Separate module
+
+Integration test could be in a other module.
+Standard test directories and naming can be used.
+
+To exclude integration test, you have just to exclude module in maven command line.
+
+----
+mvn -pl \!integrationTest <command>
+----
+
+Warning, '!' needs to be escaped.
+
 == Resources
 
 JUnit4:
