@@ -16,7 +16,7 @@
         <includeTests></includeTests>
 
         <takari-cpsuite.version>1.2.7</takari-cpsuite.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
     </properties>
 
 
